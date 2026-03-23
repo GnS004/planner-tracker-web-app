@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ginie's Planner — Personal Life Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" style="display:flex;position:fixed;inset:0;background:var(--bg);z-index:9000;align-items:center;justify-content:center;">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:48px 40px;max-width:400px;width:92%;text-align:center;">
+    <div style="font-family:'Playfair Display',serif;font-size:38px;font-weight:600;background:linear-gradient(135deg,var(--accent2),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;">Ginie's Planner</div>
+    <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:36px;">Personal Life Planner</div>
+    <div style="font-size:15px;color:var(--text);margin-bottom:8px;font-weight:500;">Your data. Everywhere.</div>
+    <div style="font-size:13px;color:var(--text3);line-height:1.8;margin-bottom:36px;">Sign in with Google to sync your habits, tasks, journal and goals across all your devices instantly.</div>
+    <button id="google-signin-btn" style="display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:14px 20px;border-radius:12px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all .2s;">
+      <svg width="20" height="20" viewBox="0 0 24 24" style="flex-shrink:0;">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Sign in with Google
+    </button>
+    <div style="font-size:11px;color:var(--text3);margin-top:18px;line-height:1.7;">Your data is private &amp; tied to your Google account.<br>Nobody else can view or edit it.</div>
+  </div>
+</div>
+
+<!-- LOADING SCREEN -->
+<div id="loading">
+  <div class="spinner"></div>
+  <h2>Ginie's Planner</h2>
+  <p id="loading-msg">Connecting to Firebase...</p>
+</div>
+
+<!-- SYNC BAR -->
+<div id="sync-bar"></div>
+<div id="sync-status"><div id="sync-dot"></div><span id="sync-txt">Saved</span></div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="s-logo">
+    <h1>Ginie's Planner</h1>
+    <p id="user-label">Personal Planner</p>
+  </div>
+  <div class="nav" id="nav">
+    <div class="nav-sec">Overview</div>
+    <div class="nav-item on" data-p="dashboard"><span class="ic">◈</span>Dashboard</div>
+    <div class="nav-sec">Daily</div>
+    <div class="nav-item" data-p="habits"><span class="ic">◉</span>Habit Tracker</div>
+    <div class="nav-item" data-p="tasks"><span class="ic">☐</span>Tasks &amp; Todos</div>
+    <div class="nav-item" data-p="journal"><span class="ic">◎</span>Journal &amp; Mood</div>
+    <div class="nav-item" data-p="focus"><span class="ic">⏱</span>Focus Timer</div>
+    <div class="nav-sec">Planning</div>
+    <div class="nav-item" data-p="goals"><span class="ic">◈</span>Goals &amp; Vision</div>
+    <div class="nav-item" data-p="calendar"><span class="ic">▦</span>Life Calendar</div>
+    <div class="nav-item" data-p="notes"><span class="ic">◪</span>Notes</div>
+    <div class="nav-sec">Wellness</div>
+    <div class="nav-item" data-p="health"><span class="ic">♡</span>Health &amp; Fitness</div>
+    <div class="nav-item" data-p="finance"><span class="ic">₹</span>Finance Tracker</div>
+    <div class="nav-sec">Enrichment</div>
+    <div class="nav-item" data-p="reading"><span class="ic">◫</span>Reading List</div>
+    <div class="nav-item" data-p="gratitude"><span class="ic">✦</span>Gratitude Log</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="topbar">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <button class="hambtn" id="hambtn">☰</button>
+      <div><h2 id="pg-title">Dashboard</h2><div class="dt" id="pg-date"></div></div>
+    </div>
+    <div class="topbtns">
+      <button class="btn btn-g btn-sm" id="export-btn">⬇ Export</button>
+      <button class="btn btn-sm" id="add-btn">+ Add</button>
+      <button id="logout-btn" style="display:none;align-items:center;gap:8px;background:transparent;border:1px solid var(--border2);color:var(--text2);border-radius:var(--rs);padding:5px 11px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;" title="Sign out">
+        <img id="user-avatar" style="width:22px;height:22px;border-radius:50%;display:none;" src="">
+        Sign out
+      </button>
+    </div>
+  </div>
+
+  <div id="content">
+
+    <!-- DASHBOARD -->
+    <div class="page on" id="pg-dashboard">
+      <div class="quote" id="dq"></div>
+      <div class="g4" style="margin-bottom:16px;">
+        <div class="stat"><div class="stat-l">Tasks Done</div><div class="stat-v" id="ds-tasks">0/0</div><div class="stat-s">today</div></div>
+        <div class="stat"><div class="stat-l">Best Streak</div><div class="stat-v" id="ds-streak">0🔥</div><div class="stat-s">days</div></div>
+        <div class="stat"><div class="stat-l">Focus Time</div><div class="stat-v" id="ds-focus">0m</div><div class="stat-s">today</div></div>
+        <div class="stat"><div class="stat-l">Mood</div><div class="stat-v" id="ds-mood">—</div><div class="stat-s">check-in</div></div>
+      </div>
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card"><div class="card-t">Today's Habits</div><div id="dh-list"></div></div>
+        <div class="card"><div class="card-t">Priority Tasks</div><div id="dt-list"></div></div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-t">Weekly Mood</div>
+          <div class="mchart" id="mchart"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-size:10px;color:var(--text3)">Mon</span><span style="font-size:10px;color:var(--text3)">Tue</span>
+            <span style="font-size:10px;color:var(--text3)">Wed</span><span style="font-size:10px;color:var(--text3)">Thu</span>
+            <span style="font-size:10px;color:var(--text3)">Fri</span><span style="font-size:10px;color:var(--text3)">Sat</span>
+            <span style="font-size:10px;color:var(--text3)">Sun</span>
+          </div>
+        </div>
+        <div class="card"><div class="card-t">Top Goal</div><div id="d-goal"></div></div>
+      </div>
+    </div>
+
+    <!-- HABITS -->
+    <div class="page" id="pg-habits">
+      <div class="sec-hdr">
+        <div><h2>Habit Tracker</h2><p>Build routines, one day at a time</p></div>
+        <button class="btn btn-sm" id="new-habit-btn">+ New Habit</button>
+      </div>
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="stat"><div class="stat-l">Today's Completion</div><div class="stat-v" id="h-pct">0%</div>
+          <div class="pbar"><div class="pfill" id="h-bar" style="background:var(--green);width:0%"></div></div>
+        </div>
+        <div class="stat"><div class="stat-l">Best Streak</div><div class="stat-v" id="h-best">0 days</div><div class="stat-s">Keep going 🔥</div></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:flex-end;gap:6px;margin-bottom:10px;">
+          <span style="font-size:11px;color:var(--text3);align-self:center;margin-right:auto;">This Week →</span>
+          <span style="font-size:10px;color:var(--text3);width:24px;text-align:center">M</span>
+          <span style="font-size:10px;color:var(--text3);width:24px;text-align:center">T</span>
+          <span style="font-size:10px;color:var(--text3);width:24px;text-align:center">W</span>
+          <span style="font-size:10px;color:var(--text3);width:24px;text-align:center">T</span>
+          <span style="font-size:10px;color:var(--text3);width:24px;text-align:center">F</span>
+          <span style="font-size:10px;color:var(--text3);width:24px;text-align:center">S</span>
+          <span style="font-size:10px;color:var(--text3);width:24px;text-align:center">S</span>
+          <span style="width:28px;"></span>
+        </div>
+        <div id="habit-list"></div>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="page" id="pg-tasks">
+      <div class="sec-hdr">
+        <div><h2>Tasks &amp; Todos</h2><p>Stay focused on what matters</p></div>
+        <button class="btn btn-sm" id="new-task-btn">+ New Task</button>
+      </div>
+      <div style="margin-bottom:14px;">
+        <span class="chip on" data-tf="all">All</span>
+        <span class="chip" data-tf="high">🔴 High</span>
+        <span class="chip" data-tf="medium">🟡 Medium</span>
+        <span class="chip" data-tf="low">🔵 Low</span>
+        <span class="chip" data-tf="done">✓ Done</span>
+      </div>
+      <div class="g3" style="margin-bottom:14px;">
+        <div class="stat"><div class="stat-l">Pending</div><div class="stat-v" id="t-pend">0</div></div>
+        <div class="stat"><div class="stat-l">Completed</div><div class="stat-v" id="t-comp">0</div></div>
+        <div class="stat"><div class="stat-l">Total</div><div class="stat-v" id="t-tot">0</div></div>
+      </div>
+      <div class="card"><div id="task-list"></div></div>
+    </div>
+
+    <!-- JOURNAL -->
+    <div class="page" id="pg-journal">
+      <div class="sec-hdr"><div><h2>Journal &amp; Mood</h2><p>Reflect, process, grow</p></div></div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-t">How are you feeling?</div>
+        <div class="mood-bar" id="mood-bar">
+          <div class="moodbtn" data-m="5">😄</div>
+          <div class="moodbtn" data-m="4">🙂</div>
+          <div class="moodbtn" data-m="3">😐</div>
+          <div class="moodbtn" data-m="2">😕</div>
+          <div class="moodbtn" data-m="1">😢</div>
+        </div>
+        <div class="fg"><label class="fl">Today's Entry</label>
+          <textarea id="j-input" placeholder="What's on your mind today?" style="min-height:110px;"></textarea>
+        </div>
+        <div style="margin-bottom:12px;">
+          <span style="font-size:11px;color:var(--text3);margin-right:6px;">Tags:</span>
+          <span class="chip" data-tag="Grateful">Grateful</span>
+          <span class="chip" data-tag="Productive">Productive</span>
+          <span class="chip" data-tag="Anxious">Anxious</span>
+          <span class="chip" data-tag="Inspired">Inspired</span>
+          <span class="chip" data-tag="Tired">Tired</span>
+          <span class="chip" data-tag="Happy">Happy</span>
+        </div>
+        <button class="btn btn-sm" id="save-journal-btn">Save Entry</button>
+      </div>
+      <div class="card-t" style="margin-bottom:10px;">Past Entries</div>
+      <div id="j-entries"></div>
+    </div>
+
+    <!-- FOCUS TIMER -->
+    <div class="page" id="pg-focus">
+      <div class="sec-hdr"><div><h2>Focus Timer</h2><p>Deep work with Pomodoro</p></div></div>
+      <div class="g2">
+        <div class="card" style="text-align:center;">
+          <div class="timer-ring">
+            <svg viewBox="0 0 190 190">
+              <circle cx="95" cy="95" r="80" fill="none" stroke="var(--bg4)" stroke-width="7"/>
+              <circle cx="95" cy="95" r="80" fill="none" stroke="var(--accent)" stroke-width="7"
+                stroke-dasharray="502.65" id="tring" stroke-dashoffset="0" stroke-linecap="round"
+                style="transition:stroke-dashoffset 1s linear;"/>
+            </svg>
+            <div class="inner">
+              <div class="timer-num" id="t-disp">25:00</div>
+              <div class="timer-lbl" id="t-lbl">FOCUS</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;">
+            <button class="btn btn-g btn-sm" id="t-reset">Reset</button>
+            <button class="btn btn-sm" id="t-toggle">Start</button>
+            <button class="btn btn-g btn-sm" id="t-skip">Skip</button>
+          </div>
+          <div>
+            <span class="chip on" data-tm="25">25 min</span>
+            <span class="chip" data-tm="5">5 min</span>
+            <span class="chip" data-tm="15">15 min</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-t">Session Stats</div>
+          <div class="stat" style="margin-bottom:10px;"><div class="stat-l">Total Focus</div><div class="stat-v" id="f-total">0 min</div></div>
+          <div class="stat" style="margin-bottom:14px;"><div class="stat-l">Sessions</div><div class="stat-v" id="f-sess">0</div></div>
+          <div class="fg"><label class="fl">Working on</label><input id="f-task" placeholder="What are you focusing on?"></div>
+          <div class="card-t" style="margin-top:12px;">Session Log</div>
+          <div id="f-log"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GOALS -->
+    <div class="page" id="pg-goals">
+      <div class="sec-hdr">
+        <div><h2>Goals &amp; Vision</h2><p>Your roadmap to the life you want</p></div>
+        <button class="btn btn-sm" id="new-goal-btn">+ New Goal</button>
+      </div>
+      <div style="margin-bottom:14px;">
+        <span class="chip on" data-gf="all">All</span>
+        <span class="chip" data-gf="health">Health</span>
+        <span class="chip" data-gf="career">Career</span>
+        <span class="chip" data-gf="finance">Finance</span>
+        <span class="chip" data-gf="personal">Personal</span>
+      </div>
+      <div id="goal-list"></div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="page" id="pg-calendar">
+      <div class="sec-hdr">
+        <div><h2>Life Calendar</h2><p>See your schedule at a glance</p></div>
+        <button class="btn btn-sm" id="new-ev-btn">+ Add Event</button>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <button class="btn btn-g btn-sm" id="cal-prev">‹</button>
+            <span style="font-size:15px;font-weight:500;" id="cal-label"></span>
+            <button class="btn btn-g btn-sm" id="cal-next">›</button>
+          </div>
+          <div class="cg" id="cal-grid"></div>
+        </div>
+        <div class="card"><div class="card-t">Upcoming Events</div><div id="ev-list"></div></div>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="page" id="pg-notes">
+      <div class="sec-hdr">
+        <div><h2>Notes</h2><p>Capture ideas, plans, anything</p></div>
+        <button class="btn btn-sm" id="new-note-btn">+ New Note</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;" id="notes-grid"></div>
+    </div>
+
+    <!-- HEALTH -->
+    <div class="page" id="pg-health">
+      <div class="sec-hdr"><div><h2>Health &amp; Fitness</h2><p>Your body is your greatest asset</p></div></div>
+      <div class="g4" style="margin-bottom:16px;">
+        <div class="stat"><div class="stat-l">Steps Today</div><div class="stat-v" id="hs-steps">0</div>
+          <div class="pbar"><div class="pfill" id="hb-steps" style="background:var(--teal);width:0%"></div></div>
+        </div>
+        <div class="stat"><div class="stat-l">Water (glasses)</div><div class="stat-v" id="hs-water">0/8</div>
+          <div class="pbar"><div class="pfill" id="hb-water" style="background:var(--blue);width:0%"></div></div>
+        </div>
+        <div class="stat"><div class="stat-l">Sleep</div><div class="stat-v" id="hs-sleep">—</div><div class="stat-s" id="hs-sleep-q"></div></div>
+        <div class="stat"><div class="stat-l">Calories</div><div class="stat-v" id="hs-cal">0</div><div class="stat-s">/ 2000 kcal</div></div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-t">Water Intake — tap to log</div>
+          <div class="wg-wrap" id="wglasses"></div>
+          <div style="margin-top:14px;display:flex;gap:8px;">
+            <input type="number" id="steps-input" placeholder="Update steps (e.g. 8000)" style="max-width:200px;">
+            <button class="btn btn-sm" id="log-steps-btn">Log Steps</button>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px;">
+            <input type="number" id="cal-input" placeholder="Calories today" style="max-width:200px;">
+            <button class="btn btn-sm" id="log-cal-btn">Log Cal</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-t">Sleep Tracker</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+            <div class="fg"><label class="fl">Bedtime</label><input type="time" id="sl-start" value="23:00"></div>
+            <div class="fg"><label class="fl">Wake up</label><input type="time" id="sl-end" value="06:30"></div>
+          </div>
+          <button class="btn btn-sm" id="log-sleep-btn" style="width:100%;margin-bottom:12px;">Log Sleep</button>
+          <div id="sleep-result"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINANCE -->
+    <div class="page" id="pg-finance">
+      <div class="sec-hdr">
+        <div><h2>Finance Tracker</h2><p>Know where every rupee goes</p></div>
+        <button class="btn btn-sm" id="new-tx-btn">+ Transaction</button>
+      </div>
+      <div class="g3" style="margin-bottom:16px;">
+        <div class="stat"><div class="stat-l">Income</div><div class="stat-v in-c" id="fi-inc">₹0</div></div>
+        <div class="stat"><div class="stat-l">Expenses</div><div class="stat-v out-c" id="fi-exp">₹0</div></div>
+        <div class="stat"><div class="stat-l">Balance</div><div class="stat-v" id="fi-bal">₹0</div></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="card-t">Transactions</div><div id="tx-list"></div></div>
+        <div class="card"><div class="card-t">Spending Breakdown</div><div id="spend-chart" style="margin-top:8px;"></div></div>
+      </div>
+    </div>
+
+    <!-- READING -->
+    <div class="page" id="pg-reading">
+      <div class="sec-hdr">
+        <div><h2>Reading List</h2><p>Every book is a new world</p></div>
+        <button class="btn btn-sm" id="new-book-btn">+ Add Book</button>
+      </div>
+      <div class="g3" style="margin-bottom:16px;">
+        <div class="stat"><div class="stat-l">Reading Now</div><div class="stat-v" id="r-r">0</div></div>
+        <div class="stat"><div class="stat-l">Completed</div><div class="stat-v" id="r-d">0</div></div>
+        <div class="stat"><div class="stat-l">Want to Read</div><div class="stat-v" id="r-w">0</div></div>
+      </div>
+      <div class="card"><div id="book-list"></div></div>
+    </div>
+
+    <!-- GRATITUDE -->
+    <div class="page" id="pg-gratitude">
+      <div class="sec-hdr"><div><h2>Gratitude Log</h2><p>Appreciate the little things</p></div></div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-t">Today I'm grateful for...</div>
+        <input class="gi" placeholder="1. Something that made you smile today" style="margin-bottom:7px;">
+        <input class="gi" placeholder="2. Someone you appreciate" style="margin-bottom:7px;">
+        <input class="gi" placeholder="3. A moment of peace or joy" style="margin-bottom:12px;">
+        <button class="btn btn-sm" id="save-grat-btn">Save</button>
+      </div>
+      <div class="card"><div class="card-t">Archive</div><div id="grat-list"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="overlay">
+  <div class="modal">
+    <h3 id="modal-title">Add</h3>
+    <div id="modal-body"></div>
+    <div class="modal-btns">
+      <button class="btn btn-g btn-sm" id="modal-cancel">Cancel</button>
+      <button class="btn btn-sm" id="modal-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE + APP SCRIPT -->
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>
